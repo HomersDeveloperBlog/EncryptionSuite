@@ -1,4 +1,5 @@
-#pragma once
+#ifndef JTH_RSAENCRYPT_H
+#define JTH_RSAENCRYPT_H
 
 //We need a generic encryptor class
 //Possibly some more differentiation symmetric/asymmetric
@@ -110,3 +111,5 @@ public:
 			RSAEncryptor<NLength>::PrivateKey(nD, nN));
 	}
 };
+
+#endif //JTH_FILELOADER_H
