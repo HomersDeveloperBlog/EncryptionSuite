@@ -14,7 +14,7 @@ namespace BlockMode_Test
 	{
 	public:
 		TEST_METHOD(ECBXOREncryptTest1)
-		{ //Strong test of CBC block mode encryption
+		{ 
 			array<uint64_t, 2U> nK = {0x4a80f93e2d5cd16aULL, 0xe44a27d2df41f7d8ULL}; //0xe44a27d2df41f7d84a80f93e2d5cd16a
 			vector<array<uint64_t, 2U>> anM = 
 			{
@@ -83,11 +83,6 @@ namespace BlockMode_Test
 
 		TEST_METHOD(CBCXOREncryptTest1)
 		{ //Strong test of CBC block mode encryption
-			//Need a way to get IV for any length. Solution is to use CRNG on high-entropy seed.
-			//Use mersenne twister on fixed seed to generate additional words.
-			array<uint64_t, 1U> nIV = {0x29e84ddc44974ce5ULL}; //0x29e84ddc44974ce5
-			//%use this and figure out what next word would be
-
 			array<uint64_t, 2U> nK = {0x4a80f93e2d5cd16aULL, 0xe44a27d2df41f7d8ULL}; //0xe44a27d2df41f7d84a80f93e2d5cd16a
 			vector<array<uint64_t, 2U>> anM = 
 			{
