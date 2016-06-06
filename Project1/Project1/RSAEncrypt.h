@@ -1,19 +1,12 @@
 #ifndef JTH_RSAENCRYPT_H
 #define JTH_RSAENCRYPT_H
 
-//We need a generic encryptor class
-//Possibly some more differentiation symmetric/asymmetric
-
 template<unsigned int NLength>
-class RSABlockCipher //%At the moment, this could just be a namespace
+class RSABlockCipher
 {
 public:
-	//Might have to use a typedef for generic naming of subclasses.
-	//If we choose a namespace instead of a class, we cannot template the key.
-	//Might need the outer class to have factory functions for the ciphers.
-
 	struct RSAPublicKey
-	{ //Could be moved out?
+	{ 
 		array<uint64_t, NLength> m_nE;
 		array<uint64_t, NLength> m_nN;
 	};
@@ -80,36 +73,35 @@ public:
 		RSAPrivateKey m_oKey;
 	};
 
-	tuple<
-		RSAEncryptor<NLength>::PublicKey, 
-		RSAEncryptor<NLength>::PrivateKey> 
-		GenerateRSAKeys() //should accept seed
-	{
-		static_assert(NLength >= 2U && NLength % 2U == 0U, 
-			"Invalid template arguments.")
-
-		//Choose two (2) distinct primes, p and q
-		const unsigned int NPrimeLength = NLength / 2U;
-		const array<uint64_t, 8U> nP = GeneratePrime<NPrimeLength>(); //should accept seed
-		const array<uint64_t, 8U> nQ = GeneratePrime<NPrimeLength>();
-
-		//Compute n = pq
-		const array<uint64_t, 16U> nN = EvalMultiplication(nP, nQ);
-
-		//Compute phi(n) (euler's totient)
-		const array<uint64_t, 16U> nTotientN = EvalMultiplication(
-			EvalSubtractionByOne_Transform(nP),
-			EvalSubtractionByOne_Transform(nQ));
-
-		//Choose d, and e = inv(d) mod phi(n)
-		const array<uint64_t, 16U> nE = {65537ULL}; //%Probably should be a random number (N, E coprime)
-		const array<uint64_t, 16U> nD = EvalModularInverse_Transform(nD, nTotient);
-
-		//Form public key as {n, e}, private key as {n, d}
-		return std::make_tuple(
-			RSAEncryptor<NLength>::PublicKey(nE, nN), //Here's a good argument for having the key types accessible at this level.
-			RSAEncryptor<NLength>::PrivateKey(nD, nN));
-	}
+	static tuple<RSAPublicKey, RSAPrivateKey> RSABlockCipher<NLength>::GenerateRSAKeys()
 };
+
+tuple<RSAPublicKey, RSAPrivateKey> RSABlockCipher<NLength>::GenerateRSAKeys()
+{
+	static_assert(NLength >= 2U && NLength % 2U == 0U, 
+		"Invalid template arguments.")
+
+	//Choose two (2) distinct primes, p and q
+	const unsigned int NPrimeLength = NLength / 2U;
+	const array<uint64_t, 8U> nP = GeneratePrime<NPrimeLength>(); //%should accept seed
+	const array<uint64_t, 8U> nQ = GeneratePrime<NPrimeLength>();
+
+	//Compute n = pq
+	const array<uint64_t, 16U> nN = EvalMultiplication(nP, nQ);
+
+	//Compute phi(n) (euler's totient)
+	const array<uint64_t, 16U> nTotientN = EvalMultiplication(
+		EvalSubtractionByOne_Transform(nP),
+		EvalSubtractionByOne_Transform(nQ));
+
+	//Choose d, and e = inv(d) mod phi(n)
+	const array<uint64_t, 16U> nE = {65537ULL}; //%Probably should be a random number (N, E coprime)
+	const array<uint64_t, 16U> nD = EvalModularInverse_Transform(nD, nTotient);
+
+	//Form public key as {n, e}, private key as {n, d}
+	return make_tuple(
+		RSAPublicKey(nE, nN),
+		RSAPrivateKey(nD, nN));
+}
 
 #endif //JTH_FILELOADER_H

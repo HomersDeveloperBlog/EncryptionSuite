@@ -3,27 +3,28 @@
 
 //With both, we need to record the original size so we can trim the padding.
 //That means the encrypted file needs to be accompanied / concatenated with some accessory information.
-//In other words, we need an unpad function
-//Might be able to work in writing a header into padding.
 
-//Check we are handling bytelengths not a multiple of largest unsigned int
-//Make an OO structure to handle padding differences
+//%In other words, we need an unpad function
 
 template<unsigned int NLength>
 class BlockLoader
 {
-	public:
-	virtual vector<array<uint64_t, NLength>> PreparePaddedBlocks(
+public:
+	tuple<vector<array<uint64_t, NLength>>, size_t> PreparePaddedBlocks(
 		const char * i_achPlainText,
 		size_t i_nBufferByteCount);
+	
+	virtual array<uint64_t, NLength> FinalBlock(
+		const char * i_pCurrentBlock,
+		size_t i_nBufferRemainderByteCount) = 0;
 };
 
 template<unsigned int NLength>
-vector<array<uint64_t, NLength>> BlockLoader<NLength>::reparePaddedBlocks(
+tuple<vector<array<uint64_t, NLength>>, size_t> BlockLoader<NLength>::PreparePaddedBlocks(
 	const char * i_achPlainText,
 	size_t i_nBufferByteCount) //Number of characters, not necessarily 8 bits each
 {
-	size_t nBlockByteCount = sizeof(uint64_t) * NLength;
+	const size_t nBlockByteCount = sizeof(uint64_t) * NLength;
 	size_t nBufferBlockCount = 
 		i_nBufferByteCount / nBlockSizeInBytes;
 	size_t nBufferRemainderByteCount = 
@@ -48,31 +49,58 @@ vector<array<uint64_t, NLength>> BlockLoader<NLength>::reparePaddedBlocks(
 
 		vectReturnValue.push_back(achBlockBuffer);
 	}
-	
-	//Last block. Zero padding
-	array<uint64_t, NLength> achBlockBuffer = {0x0ULL};
-	memcpy_s(
-		achBlockBuffer.data(),
-		nBlockByteCount,
-		pCurrentBlock,
-		nBufferRemainderByteCount);
 
+	array<uint64_t, NLength> achBlockBuffer = FinalBlock(
+		pCurrentBlock, 
+		nBufferRemainderByteCount);
 	vectReturnValue.push_back(achBlockBuffer);
 
-	////Last block. Ciphertext stealing.
-	//const size_t nStolenByteCount = 
-	//	nBlockByteCount - nBufferRemainderByteCount;
-
-	//array<uint64_t, NLength> achBlockBuffer;
-	//memcpy_s(
-	//	achBlockBuffer.data(),
-	//	nBlockByteCount,
-	//	pCurrentBlock - nStolenByteCount,
-	//	nBlockByteCount);
-
-	//vectReturnValue.push_back(achBlockBuffer);
-
-	return vectReturnValue
+	size_t nPaddingByteCount = nBlockByteCount - i_nBufferRemainderByteCount;
+	return make_tuple(vectReturnValue, nPaddingByteCount);
 }
+
+template<unsigned int NLength>
+class ZeroPaddingLoader : BlockLoader<NLength>
+{
+	virtual array<uint64_t, NLength> FinalBlock(
+		const char * i_pCurrentBlock,
+		size_t i_nBufferRemainderByteCount) override
+	{
+		assert(i_pCurrentBlock);
+
+		const size_t nBlockByteCount = sizeof(uint64_t) * NLength;
+		array<uint64_t, NLength> achBlockBuffer = {0x0ULL};
+		memcpy_s(
+			achBlockBuffer.data(),
+			nBlockByteCount,
+			i_pCurrentBlock,
+			i_nBufferRemainderByteCount);
+
+		return achBlockBuffer;
+	}
+};
+
+template<unsigned int NLength>
+class CipherTextStealingLoader : BlockLoader<NLength>
+{
+	virtual array<uint64_t, NLength> FinalBlock(
+		const char * i_pCurrentBlock,
+		size_t i_nBufferRemainderByteCount) override
+	{
+		assert(i_pCurrentBlock);
+
+		const size_t nBlockByteCount = sizeof(uint64_t) * NLength;
+		size_t nStolenByteCount = nBlockByteCount - i_nBufferRemainderByteCount;
+		
+		array<uint64_t, NLength> achBlockBuffer;
+		memcpy_s(
+			achBlockBuffer.data(),
+			nBlockByteCount,
+			i_pCurrentBlock - nStolenByteCount,
+			nBlockByteCount);
+
+		return achBlockBuffer;
+	}
+};
 
 #endif //JTH_PADDING_H

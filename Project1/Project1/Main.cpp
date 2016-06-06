@@ -1,5 +1,3 @@
-//% a value to interpret as default / skip?
-
 enum DirectionOption : size_t
 {
 	ENCRYPT = 0U, DECRYPT,
@@ -55,12 +53,12 @@ struct ProgramOptions
 	BlockSizeOption m_eBlockSizeOption;
 	BlockModeOption m_eBlockModeOption;
 	PaddingOption m_ePaddingOption;
-	size_t m_nPaddedBytes; //Unpadding key. //%Treat separate?
 };
 
 struct ProgramOptionsFile
 {
 	ProgramOptions m_oProgramOptions;
+	size_t m_nPaddedBytes; //Unpadding key. //%Treat separate?
 	char n_achDecryptionKey[512];
 };
 
@@ -79,12 +77,64 @@ struct ProgramOptionsFile
 //So we need a component that translates a command line argument into a OptionsFile structure.
 //Then something that can take the options file structure and unpack the options.
 
-//Fix file handle resource leak when new throws exception.
-
 #include <vector>
 #include <string>
+#include "FileLoader.h"
 
-using namespace std;
+//Generic entry for encryption / decryption
+void EncipherFile(
+	const string & i_strSourceFileName,
+	const string & i_strDestinationFileName,
+	ProgramOptions i_oProgramOptions,
+	const string & i_strInputKeyFileName = string(),
+	size_t i_nPaddingKey = 0U)
+{
+	//Really, we should parse the options for problems before doing anything.
+	//Then we open the files, check that that went ok.
+	//Then perform padding, then encryption, then writeback.
+
+	shared_ptr<char> pSourceBuffer = nullptr;
+	size_t nSourceSize = 0x0ULL; //%Remind yourself what you were thinking when you designed this data.
+	tie(pSourceBuffer, nSourceSize) = ReadFileIntoBuffer(i_strSourceFileName);
+	//Check return
+
+	switch(i_eBlockSizeOption)
+	{
+		case:
+			break;
+	}
+
+	BlockLoader * pPadder = 0;
+	MultiBlockCipher * pMultiBlockCipher = 0;
+
+	//Need nested switch for algorithm / direction / block size
+	//also block mode / direction / block size
+
+	switch()
+	{
+		case :
+		switch(i_eDirectionOptions)
+		{
+			case ENCRYPT:
+			{
+				break;
+			}
+			case DECRYPT:
+			{
+				break;
+			}
+		}
+	}
+
+	DirectionOption i_eDirectionOption;
+	AlgorithmOption i_eAlgorithmOption;
+	BlockSizeOption i_eBlockSizeOption;
+	BlockModeOption i_eBlockModeOption;
+	PaddingOption i_ePaddingOption;
+
+	size_t nDestinationSize = WriteFileFromBuffer(i_strDestinationFileName);
+	//Check return
+}
 
 int main(
 	char ** astrArgs, 
@@ -108,16 +158,13 @@ int main(
 			oProgramOptions.m_eDirectionOption = static_cast<DirectionOption>(nParsedValue);
 			return true;
 		}
-		else
-		{
-			return false;
-		}
+
+		return false;
 	}
-	catch()
+	catch(...)
 	{
 		return false;
 	}
-
 
 	if(oProgramOptions.m_eDirectionOption == ENCRYPT)
 	{ //expect 4 more enums, then 1 target file name.

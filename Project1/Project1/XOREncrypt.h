@@ -4,7 +4,7 @@
 #include "BigBitArray.h"
 
 template<unsigned int NBlockWordCount>
-class XOR //: public SymmetricEncryptor<NBlockWordCount> // : BlockEncryptor<NBlockWordCount>
+class XORBlockCipher //: public SymmetricEncryptor<NBlockWordCount> // : BlockEncryptor<NBlockWordCount>
 {
 public:
 	struct XORKey //: SymmetricKey<NBlockWordCount> // : BlockEncryptorKey<NBlockWordCount>
