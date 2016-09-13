@@ -1,84 +1,79 @@
-#ifndef JTH_FILELOADER_H
-#define JTH_FILELOADER_H
+#pragma once
 
 #include <fstream>
 #include <tuple>
 #include <memory>
+#include <string>
 #include "assert.h"
 
 using namespace std;
 
 //number of chars read on success, zero on failure.
 //non-null pointer to char buffer on success, null on failure
-//shared pointer necessary to delete buffer if return value is ignored
 tuple<shared_ptr<char>, size_t> ReadFileIntoBuffer(
-	const char * i_strFilePath)
+	const string & i_strFilePath)
 {
-	assert(i_strFilePath);
-
-	if(i_strFilePath) //Handling of null filepaths implementation defined.
+	assert(i_strFilePath.data());
+	ifstream oInputFileStream(
+		i_strFilePath.data(), 
+		ifstream::in | ifstream::binary);
+	
+	size_t nLength = 0x0ULL;
+	shared_ptr<char> pBuffer = nullptr;
+	if(oInputFileStream)
 	{
-		ifstream oInputFileStream(
-			i_strFilePath, 
-			ifstream::in | ifstream::binary);
-
-		if(oInputFileStream)
+		//Get file size
+		oInputFileStream.seekg(0, oInputFileStream.end);
+		nLength = oInputFileStream.tellg();
+		
+		//Create a suitable buffer
+		if(nLength)
 		{
-			//Get file size
-			oInputFileStream.seekg(0, oInputFileStream.end);
-			size_t nLength = oInputFileStream.tellg();
-		
-			//Create a suitable buffer
-			shared_ptr<char> pBuffer = nullptr;
-			if(nLength)
+			pBuffer = shared_ptr<char>(
+				new (nothrow) char[nLength], 
+				default_delete<char[]>());
+
+			if(pBuffer)
 			{
-				pBuffer = shared_ptr<char>(
-					new (nothrow) char[nLength], 
-					default_delete<char[]>());
-
-				if(pBuffer)
-				{
-					//Read from the file into the buffer
-					oInputFileStream.seekg(0, oInputFileStream.beg);
-					oInputFileStream.read(pBuffer.get(), nLength);
-				}
+				//Read from the file into the buffer
+				oInputFileStream.seekg(0, oInputFileStream.beg);
+				oInputFileStream.read(pBuffer.get(), nLength);
 			}
-		
-			oInputFileStream.close();
-
-			return make_tuple<>(pBuffer, nLength);
+			else
+			{
+				nLength = 0x0ULL;
+			}
 		}
+		
+		oInputFileStream.close();
 	}
 
-	return make_tuple(nullptr, 0x0ULL);
+	return make_tuple(pBuffer, nLength);
 }
 
 size_t WriteFileFromBuffer(
-	const char * i_strFilePath,
-	const shared_ptr<char> i_pContentBuffer,
+	const string & i_strFilePath,
+	const char * i_pContentBuffer,
 	size_t i_nBufferByteCount)
 {
-	assert(i_strFilePath);
+	assert(i_strFilePath.data());
 	assert(i_pContentBuffer && i_nBufferByteCount);
 
-	if(i_strFilePath
-		&& i_nBufferByteCount
+	if(i_nBufferByteCount
 		&& i_pContentBuffer)
 	{
 		ofstream oOutputFileStream(
-			i_strFilePath, 
+			i_strFilePath.data(), 
 			ofstream::out | ofstream::binary);
 
 		if(oOutputFileStream)
-		{//Write to the file from the buffer
-			oOutputFileStream.write(i_pContentBuffer.get(), i_nBufferByteCount);
+		{ //Write to the file from the buffer
+			oOutputFileStream.write(i_pContentBuffer, i_nBufferByteCount);
 			oOutputFileStream.close();
-		}
 
-		return i_nBufferByteCount;
+			return i_nBufferByteCount;
+		}
 	}
 
-	return 0x0ULL;
+	return 0;
 }
-
-#endif //JTH_FILELOADER_H

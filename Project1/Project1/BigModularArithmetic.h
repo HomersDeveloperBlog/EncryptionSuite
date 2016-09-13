@@ -1,6 +1,4 @@
-
-#ifndef JTH_BIGMODULARARITHMETIC_H
-#define JTH_BIGMODULARARITHMETIC_H
+#pragma once
 
 #include "BigUnsignedInteger.h"
 #include "BigSignedInteger.h"
@@ -366,5 +364,3 @@ array<uint64_t, NLength> MultiWordIntegerModularInverse(
 //	//Inverse is nX_Last
 //	return nX_Last;
 //}
-
-#endif

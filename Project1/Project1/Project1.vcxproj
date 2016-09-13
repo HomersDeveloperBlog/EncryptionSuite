@@ -117,21 +117,28 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="HomerCryptoAPI.cpp" />
     <ClCompile Include="Main.cpp" />
-    <ClCompile Include="RSAEncrypt.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="FileCipher.h" />
+    <ClInclude Include="HomerCryptoAPI.h" />
     <ClInclude Include="BigModularArithmetic.h" />
-    <ClInclude Include="BlockMode.h" />
+    <ClInclude Include="BigSignedInteger.h" />
+    <ClInclude Include="CryptoKey.h" />
+    <ClInclude Include="HomerCryptoHeaderOnlyAPI.h" />
+    <ClInclude Include="MultiBlockCipher.h" />
+    <ClInclude Include="BufferCipher.h" />
+    <ClInclude Include="CommandLine.h" />
     <ClInclude Include="FileLoader.h" />
     <ClInclude Include="LinkerMacros.h" />
     <ClInclude Include="BigBitArray.h" />
-    <ClInclude Include="BigGaloisField.h" />
     <ClInclude Include="BigUnsignedInteger.h" />
-    <ClInclude Include="Padding.h" />
+    <ClInclude Include="BlockLoader.h" />
     <ClInclude Include="PrimeNumberGeneratator.h" />
-    <ClInclude Include="RSAEncrypt.h" />
-    <ClInclude Include="XOREncrypt.h" />
+    <ClInclude Include="ProgramOptions.h" />
+    <ClInclude Include="BlockCipher.h" />
+    <ClInclude Include="RandomNumberUtility.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

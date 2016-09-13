@@ -1,16 +1,4 @@
-//Need alias control
-//Need to ensure all index unsigned ints in control logic cannot overflow.
-
-//Separate out into '..Core.h' and '.h' files. Regular .h includes the core and outside files do not.
-
-//Can the code actually properly handle <1> length arrays?
-//Try to get special cases worked in as template specialization.
-//%move single / double word operations to another file. or make them template specializations.
-
-//Just make the MultiWordInteger<N> a typedef for array<uint64_t, N>
-
-#ifndef JTH_BIGUNSIGNEDINTEGER_H
-#define JTH_BIGUNSIGNEDINTEGER_H
+#pragma once
 
 #include "BigBitArray.h"
 
@@ -270,4 +258,6 @@ array<uint64_t, NLength> MultiWordIntegerModularReduction(
 	return anReducedA;
 }
 
-#endif //JTH_BIGUNSIGNEDINTEGER_H
+//TODO:
+//Need alias control
+//Need to ensure all index unsigned ints in control logic cannot overflow.

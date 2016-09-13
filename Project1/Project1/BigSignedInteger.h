@@ -1,6 +1,4 @@
-
-#ifndef JTH_BIGSIGNEDINTEGER_H
-#define JTH_BIGSIGNEDINTEGER_H
+#pragma once
 
 #include "BigUnsignedInteger.h"
 
@@ -121,5 +119,3 @@ uint64_t SignedMultiWordIntegerSubtractWithCarryInPlace(
 		io_nA,
 		i_nB);
 }
-
-#endif

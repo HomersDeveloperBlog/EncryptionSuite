@@ -15,13 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="RSAEncrypt.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="LinkerMacros.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="BigGaloisField.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="BigUnsignedInteger.h">
@@ -33,27 +27,54 @@
     <ClInclude Include="BigModularArithmetic.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="XOREncrypt.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="BlockMode.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="PrimeNumberGeneratator.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Padding.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="FileLoader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="BigSignedInteger.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ProgramOptions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CommandLine.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BufferCipher.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BlockLoader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MultiBlockCipher.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BlockCipher.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CryptoKey.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RandomNumberUtility.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="HomerCryptoAPI.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="HomerCryptoHeaderOnlyAPI.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FileCipher.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="RSAEncrypt.cpp">
+    <ClCompile Include="Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Main.cpp">
+    <ClCompile Include="HomerCryptoAPI.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

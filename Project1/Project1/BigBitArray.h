@@ -1,9 +1,7 @@
-//You currently make assumptions about machine word size. Don't.
-//Transform into class implementation.
-//Compiler assume statements for nonzero template parameters
+#pragma once
 
-#ifndef JTH_BIGBITARRAY_H
-#define JTH_BIGBITARRAY_H
+//%You currently make assumptions about machine word size. Don't.
+//%Compiler assume statements for nonzero template parameters
 
 #include "assert.h"
 #include "stdint.h"
@@ -664,5 +662,3 @@ array<uintmax_t, NLength> MultiWordIntegerBitwiseOR(
 
 	return anReturnValue;
 }
-
-#endif //JTH_BIGBITARRAY_H

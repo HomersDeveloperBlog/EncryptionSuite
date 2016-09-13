@@ -1,47 +1,6 @@
-#ifndef JTH_PRIMENUMBERGENERATOR_H
-#define JTH_PRIMENUMBERGENERATOR_H
+#pragma once
 
-#include <random>
-
-template<unsigned int NLength, typename FGenerator>
-array<uint64_t, NLength> GenerateRandomBigUInt(
-	const FGenerator & i_fGenerator)
-{
-	//We need to set the range of these numbers to not include small numbers.
-	//Or numbers with large/small parity
-	//And has not been generated previously (this word)
-	//Note that the std mersenne twister is unchecked code.
-	//Require return type of generator to exactly return a full length int.
-	//The generated RSA primes should not be the same.
-
-	array<uint64_t, NLength> nBigRandomNumber;
-	for(unsigned int nWord = 0U;
-		nWord < NLength;
-		nWord++)
-	{
-		nBigRandomNumber[nWord] = fGenerator();
-	}
-}
-
-template<unsigned int NLength, typename FGenerator>
-array<uint64_t, NLength> GenerateRandomBigOddUInt(
-	const FGenerator & i_fGenerator)
-{
-	array<uint64_t, NLength> nReturnValue = GenerateRandomBigUInt<NLength>(i_fGenerator);
-	anReturnValue[0U] |= 0x0000000000000001ULL; //Assign lsb to 1
-
-	return anReturnValue;
-}
-
-template<unsigned int NLength, typename FGenerator>
-array<uint64_t, NLength> GenerateRandomBigEvenUInt(
-	const FGenerator & i_fGenerator)
-{
-	array<uint64_t, NLength> nReturnValue = GenerateRandomBigUInt<NLength>(i_fGenerator);
-	anReturnValue[0U] &= 0xfffffffffffffffeULL; //Assign lsb to 0
-
-	return anReturnValue;
-}
+#include "RandomNumberUtility.h"
 
 //If p passes the test, it has at least 3/4 chance of being prime.
 template<unsigned int NLength>
@@ -83,7 +42,8 @@ bool IsMillerRabinWitnessToPrime(
 template<unsigned int NLength>
 bool IsMillerRabinPrime(
 	const array<uint64_t, NLength> & i_nP,
-	const unsigned int i_nWitnessThreshold)
+	const unsigned int i_nWitnessThreshold,
+	size_t & io_nSeed)
 {
 	assert(!EvalLexographicEqualsToZero(i_nP));
 	if(EvalLexographicLessThanEqualTo(1U)) 
@@ -100,7 +60,7 @@ bool IsMillerRabinPrime(
 
 	//Find largest power of two dividing p-1 (by counting left zeroes)
 	unsigned int nLSWord = 16U, nLSBit = 64U;
-	tie(nLSWord, nLSBit) = EvalLeastSignificantBit(nPMinusOne); //%make sure this - 1 happens.
+	tie(nLSWord, nLSBit) = EvalLeastSignificantBit(nPMinusOne);
 	assert(nLSBit != 64U && nLSWord != 16U); 
 	unsigned int nS = nLSWord * 64U + nLSBit; //%confirm this will not overflow
 
@@ -115,7 +75,7 @@ bool IsMillerRabinPrime(
 		++nWitnessTest)
 	{
 		array<uint64_t, NLength> nN = EvalModularReduction_InPlace(
-			GenerateRandomBigUInt<NLength>(i_fGenerator), 
+			GenerateRandomBigUInt<NLength>(io_nSeed), 
 			i_nP); //%We should not repeat numbers, however unlikely.
 		
 		if(!IsMillerRabinWitnessToPrime(
@@ -133,20 +93,26 @@ bool IsMillerRabinPrime(
 }
 
 template<NLength>
-array<uint64_t, NLength> GeneratePrime()
+array<uint64_t, NLength> GeneratePrime(
+	size_t & io_nSeed)
 {
-	//Generate a random number
-	size_t nSeed = stable_clock.now(); //tied to time.
-	mt19937_64 fGenerator(nSeed);
-
 	//Generate candidate prime
-	array<uint64_t, NLength> nP = GenerateRandomBigOddUInt<NLength>(i_fGenerator);
+	array<uint64_t, NLength> nP = GenerateRandomBigOddUInt<NLength>(io_nSeed);
+	//We need to set the range of these numbers to not include small numbers.
+	//Or numbers with large/small parity
+	//And has not been generated previously (this word)
+	//Note that the std mersenne twister is unchecked code.
+	//Require return type of generator to exactly return a full length int.
+	//The generated RSA primes should not be the same.
 
 	for(unsigned int nPrimeAttempt = 0U;
-		nPrimeAttempt < 1000U;
+		nPrimeAttempt < 1000U; //%magic number
 		++nPrimeAttempt)
 	{
-		if(IsMillerRabinPrime(nP, 50U))
+		if(IsMillerRabinPrime(
+			nP, 
+			50U, //%magic number
+			io_nSeed))
 		{
 			return nP;
 		}
@@ -165,5 +131,3 @@ array<uint64_t, NLength> GeneratePrime()
 	assert(false);
 	return MultiWordIntegerConstantZero();
 }
-
-#endif JTH_PRIMENUMBERGENERATOR_H

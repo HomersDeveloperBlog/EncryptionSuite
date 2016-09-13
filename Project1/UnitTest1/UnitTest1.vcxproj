@@ -172,6 +172,7 @@
     <ClCompile Include="BigBitArrayTest.cpp" />
     <ClCompile Include="BigGaloisField.cpp" />
     <ClCompile Include="BigModularArithmeticTest.cpp" />
+    <ClCompile Include="BigSignedIntegerTest.cpp" />
     <ClCompile Include="BlockModeTest.cpp" />
     <ClCompile Include="PaddingTest.cpp" />
     <ClCompile Include="PrimeNumberGeneratorTest.cpp" />
